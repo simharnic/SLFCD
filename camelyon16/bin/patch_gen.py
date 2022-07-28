@@ -1,3 +1,9 @@
+"""
+基于给定的坐标列表生成图像块数据集
+
+当生成的中心点为 Tumor_Normal(肿瘤WSI中的正常区域) 时可能会导致生成的块上包含肿瘤区域
+对结果的影响未知（原作者说不大）
+"""
 import sys
 import os
 import argparse
@@ -31,8 +37,10 @@ lock = Lock()
 
 def process(opts):
     i, pid, x_center, y_center, args = opts
+
     x = int(int(x_center) - args.patch_size / 2)
     y = int(int(y_center) - args.patch_size / 2)
+
     wsi_path = os.path.join(args.wsi_path, pid + '.tif')
     slide = openslide.OpenSlide(wsi_path)
     img = slide.read_region(
@@ -40,7 +48,7 @@ def process(opts):
         (args.patch_size, args.patch_size)).convert('RGB')
 
     img.save(os.path.join(args.patch_path, str(i) + '.png'))
-
+    
     global lock
     global count
 

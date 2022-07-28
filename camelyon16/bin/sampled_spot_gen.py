@@ -1,3 +1,7 @@
+"""
+生成块的中心点
+也就是随机从给定的掩膜中提取点
+"""
 import os
 import sys
 import logging
@@ -22,9 +26,9 @@ parser.add_argument("--level", default=6, metavar="LEVEL", type=int,
 
 class patch_point_in_mask_gen(object):
     '''
-    extract centre point from mask
-    inputs: mask path, centre point number
-    outputs: centre point
+    从掩膜中提取中心点
+    输入: 掩膜路径, 需要的中心点数量
+    输出: 中心点
     '''
 
     def __init__(self, mask_path, number):
@@ -33,10 +37,11 @@ class patch_point_in_mask_gen(object):
 
     def get_patch_point(self):
         mask_tissue = np.load(self.mask_path)
+
+        # 提取掩膜区域所有点的坐标
         X_idcs, Y_idcs = np.where(mask_tissue)
-
         centre_points = np.stack(np.vstack((X_idcs.T, Y_idcs.T)), axis=1)
-
+        # 随机选取所需要的数量的中心点
         if centre_points.shape[0] > self.number:
             sampled_points = centre_points[np.random.randint(centre_points.shape[0],
                                                              size=self.number), :]
@@ -46,15 +51,15 @@ class patch_point_in_mask_gen(object):
 
 
 def run(args):
+    # 选取中心点
     sampled_points = patch_point_in_mask_gen(args.mask_path, args.patch_number).get_patch_point()
-    sampled_points = (sampled_points * 2 ** args.level).astype(np.int32) # make sure the factor
-
+    # 考虑对应层级的降采样系数，计算得到其在原图中的坐标
+    sampled_points = (sampled_points * 2 ** args.level).astype(np.int32)
+    # 导出
     mask_name = os.path.split(args.mask_path)[-1].split(".")[0]
     name = np.full((sampled_points.shape[0], 1), mask_name)
     center_points = np.hstack((name, sampled_points))
-
     txt_path = args.txt_path
-
     with open(txt_path, "a") as f:
         np.savetxt(f, center_points, fmt="%s", delimiter=",")
 

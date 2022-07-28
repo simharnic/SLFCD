@@ -1,3 +1,6 @@
+"""
+用来将 Camelyon16 组织官方提供的 xml 格式的肿瘤注释文件转换为 json 格式
+"""
 import sys
 import os
 import argparse
@@ -5,7 +8,7 @@ import logging
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../')
 
-from camelyon16.data.annotation import Formatter  # noqa
+from camelyon16.data.annotation import Formatter  # 猜测应该是使用了 Camelyon16 提供的转换函数
 
 parser = argparse.ArgumentParser(description='Convert Camelyon16 xml format to'
                                  'internal json format')
@@ -16,7 +19,7 @@ parser.add_argument('json_path', default=None, metavar='JSON_PATH', type=str,
 
 
 def run(args):
-    Formatter.camelyon16xml2json(args.xml_path, args.json_path)
+    Formatter.camelyon16xml2json(args.xml_path, args.json_path) # 转换函数
 
 
 def main():

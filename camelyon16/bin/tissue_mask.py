@@ -1,3 +1,7 @@
+"""
+获取组织的掩码
+也就是说，去除掉背景的空白部分，使用了基于阈值的图像分割，采用 OSTU 算法计算自适应阈值
+"""
 import sys
 import os
 import argparse
@@ -27,19 +31,26 @@ def run(args):
 
     slide = openslide.OpenSlide(args.wsi_path)
 
-    # note the shape of img_RGB is the transpose of slide.level_dimensions
+    # img_RGB 的矩阵形状是 slide.level_dimensions 的转置
     img_RGB = np.transpose(np.array(slide.read_region((0, 0),
                            args.level,
                            slide.level_dimensions[args.level]).convert('RGB')),
                            axes=[1, 0, 2])
 
+    # RGB 转 HSV 因为 HSV 更适合进行颜色处理
     img_HSV = rgb2hsv(img_RGB)
 
+    # 使用 OSTU 算法进行基于阈值的图像分割
+    # RGB 下的图像遮罩
     background_R = img_RGB[:, :, 0] > threshold_otsu(img_RGB[:, :, 0])
     background_G = img_RGB[:, :, 1] > threshold_otsu(img_RGB[:, :, 1])
     background_B = img_RGB[:, :, 2] > threshold_otsu(img_RGB[:, :, 2])
     tissue_RGB = np.logical_not(background_R & background_G & background_B)
+
+    # HSV 下的图像遮罩
     tissue_S = img_HSV[:, :, 1] > threshold_otsu(img_HSV[:, :, 1])
+
+    # 由参数 RGB_min 手动给定的阈值
     min_R = img_RGB[:, :, 0] > args.RGB_min
     min_G = img_RGB[:, :, 1] > args.RGB_min
     min_B = img_RGB[:, :, 2] > args.RGB_min
