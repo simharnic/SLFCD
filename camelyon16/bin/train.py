@@ -53,8 +53,8 @@ def train_epoch(summary, summary_writer, cnn, model, loss_fn, optimizer,
     time_now = time.time()
     for step in range(steps):
         data_train, target_train = next(dataiter_train)
-        data_train = Variable(data_train.float().cuda(async=True))
-        target_train = Variable(target_train.float().cuda(async=True))
+        data_train = Variable(data_train.float().cuda(non_blocking=True))
+        target_train = Variable(target_train.float().cuda(non_blocking=True))
 
         output = model(data_train)
         output = torch.squeeze(output) # noqa
@@ -102,8 +102,8 @@ def valid_epoch(summary, model, loss_fn,
     acc_sum = 0
     for step in range(steps):
         data_valid, target_valid = next(dataiter_valid)
-        data_valid = Variable(data_valid.float().cuda(async=True), volatile=True)
-        target_valid = Variable(target_valid.float().cuda(async=True))
+        data_valid = Variable(data_valid.float().cuda(non_blocking=True), volatile=True)
+        target_valid = Variable(target_valid.float().cuda(non_blocking=True))
 
         output = model(data_valid)
         output = torch.squeeze(output) # important
