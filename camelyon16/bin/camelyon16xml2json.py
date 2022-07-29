@@ -10,6 +10,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../')
 
 from camelyon16.data.annotation import Formatter  # 猜测应该是使用了 Camelyon16 提供的转换函数
 
+# 使用 argparse 包
+# argparse.ArgumentParser() 和 add_argument() 用于指定输入参数以及提供描述
+# run(args) 可以看作实际运行的“主函数”
+# 之后所有 py 文件都是如此，不再进行注释
 parser = argparse.ArgumentParser(description='Convert Camelyon16 xml format to'
                                  'internal json format')
 parser.add_argument('xml_path', default=None, metavar='XML_PATH', type=str,
