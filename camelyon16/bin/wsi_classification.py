@@ -1,3 +1,6 @@
+"""
+使用特征训练模型得到 WSI 分类器 以及对分类器进行 ROC 评估
+"""
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn import tree
@@ -16,10 +19,17 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__) + '/../../'))
 FEATURE_START_INDEX = 6
 
 parser = argparse.ArgumentParser(description='Train and test the wsi classification')
-parser.add_argument()
-
+parser.add_argument('probs_map_features_train', default=None, metavar='PROBS_MAP_FEATURES_TRAIN', type=str,
+                    help='Path to the probs map features training data file.')
+parser.add_argument('probs_map_features_test', default=None, metavar='PROBS_MAP_FEATURES_TEST', type=str,
+                    help='Path to the probs map features testinging data file.')
+parser.add_argument('test_csv_gt', default=None, metavar='TEST_CSV_GT', type=str,
+                    help='Path to the lable file of test data.')
 
 def plot_roc(gt_y, prob_predicted_y):
+    """
+    ROC 评估
+    """
     predictions = prob_predicted_y[:, 1]
     fpr, tpr, _ = roc_curve(gt_y, predictions)
 
@@ -42,6 +52,9 @@ def plot_roc(gt_y, prob_predicted_y):
 
 
 def validate(x, gt_y, clf):
+    """
+    预测
+    """
     predicted_y = clf.predict(x)
     prob_predicted_y = clf.predict_proba(x)
     logging.info('confusion matrix:')
@@ -51,33 +64,45 @@ def validate(x, gt_y, clf):
 
 
 def train(x, y):
+    """
+    训练分类器
+    """
+    # 随机森林
     # clf = RandomForestClassifier(n_estimators=50, n_jobs=2)
     # clf.fit(x, y)
-
+    
+    # K近邻
     # clf = KNeighborsClassifier(n_neighbors=5, weights='distance')
     # clf.fit(x, y)
 
+    # c-支持向量机
     clf = svm.SVC(kernel='linear', C=1.5, probability=True)
     clf.fit(x, y)
 
+    # 高斯朴素贝叶斯
     # clf = GaussianNB()
     # clf.fit(x, y)
 
     return clf
 
 
-def load_train_test_data(f_train, f_test, args):
-    df_train = pd.read_csv(f_train)
-    df_test = pd.read_csv(f_test)
-    df_test_gt = pd.read_csv(args.TEST_CSV_GT, header=None) # test 的标签
+def load_train_test_data(f_train, f_test, f_test_gt):
+    """
+    载入训练数据
+    没搞懂为什么需要单独读入测试集的标签
+    根据 extract_feature_probsmap.py 特征的最后一行就是标签
+    """
+    df_train = pd.read_csv(f_train) # 训练数据集
+    df_test = pd.read_csv(f_test) # 测试数据集
+    df_test_gt = pd.read_csv(f_test_gt, header=None) # test 的标签
     # print(df_test_gt)
     df_test_gt.at[df_test_gt[1] == 'Tumor'] = 1
     df_test_gt.at[df_test_gt[1] == 'Normal'] = 0
     # print(df_test_gt)
     test_gt = df_test_gt.ix[:, 1]
 
+    # 特征的最后一个是标签
     n_columns = len(df_train.columns)
-
     feature_column_names = df_train.columns[FEATURE_START_INDEX:n_columns - 1]
     label_column_name = df_train.columns[n_columns - 1]
 
@@ -86,7 +111,8 @@ def load_train_test_data(f_train, f_test, args):
 
 def run(args):
     train_x, train_y, test_x, test_y = load_train_test_data(args.probs_map_features_train,
-                                                            args.probs_map_features_test)
+                                                            args.probs_map_features_test,
+                                                            args.test_csv_gt)
     model = train(train_x, train_y)
     predict_y, prob_predict_y = validate(test_x, test_y, model)
     plot_roc(test_y, prob_predict_y)

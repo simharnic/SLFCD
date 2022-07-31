@@ -1,3 +1,6 @@
+"""
+使用非最大抑制算法（nms）获得每个检测到的肿瘤区域在level 0 级的坐标
+"""
 import sys
 import os
 import argparse
@@ -29,15 +32,18 @@ parser.add_argument('--sigma', default=0.0, type=float,
 
 
 def run(args):
-    probs_map = np.load(args.probs_map_path)
+    probs_map = np.load(args.probs_map_path) # 输入概率热图
     X, Y = probs_map.shape
     resolution = pow(2, args.level)
-
+    # 高斯滤波
     if args.sigma > 0:
         probs_map = filters.gaussian(probs_map, sigma=args.sigma)
 
     outfile = open(args.coord_path, 'w')
     while np.max(probs_map) > args.prob_thred:
+        # 循环直到热图中不再有大于 prob_thred 的点
+
+        # 获取并记录热图最大值点
         prob_max = probs_map.max()
         max_idx = np.where(probs_map == prob_max)
         x_mask, y_mask = max_idx[0][0], max_idx[1][0]
@@ -45,11 +51,13 @@ def run(args):
         y_wsi = int((y_mask + 0.5) * resolution)
         outfile.write('{:0.5f},{},{}'.format(prob_max, x_wsi, y_wsi) + '\n')
 
+        # 从 x_mask y_mask 向外扩展半径 arg.radius
         x_min = x_mask - args.radius if x_mask - args.radius > 0 else 0
         x_max = x_mask + args.radius if x_mask + args.radius <= X else X
         y_min = y_mask - args.radius if y_mask - args.radius > 0 else 0
         y_max = y_mask + args.radius if y_mask + args.radius <= Y else Y
-
+        
+        # 删除掉扩展区域内的概率热图点
         for x in range(x_min, x_max):
             for y in range(y_min, y_max):
                 probs_map[x, y] = 0

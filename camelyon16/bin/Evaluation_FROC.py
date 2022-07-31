@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+评估肿瘤定位的平均FROC评分
+"""
+
+"""
 Created on Wed Jan 20 14:09:32 2016
 @author: Babak Ehteshami Bejnordi
 Evaluation code for the Camelyon16 challenge on cancer metastases detecion
