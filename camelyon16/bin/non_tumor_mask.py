@@ -24,7 +24,7 @@ parser.add_argument("normal_path", default=None, metavar='NORMAL_PATCH', type=st
 def run(args):
     tumor_mask = np.load(args.tumor_path)
     tissue_mask = np.load(args.tissue_path)
-    # 非背景部分 ∩ 癌症部分的补集
+    # 非背景部分 交 癌症部分的补集
     normal_mask = tissue_mask & (~ tumor_mask)
 
     np.save(args.normal_path, normal_mask)

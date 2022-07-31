@@ -8,7 +8,7 @@ import logging
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../')
 
-from camelyon16.data.annotation import Formatter  # 猜测应该是使用了 Camelyon16 提供的转换函数
+from camelyon16.data.annotation import Formatter  # 见 ../data/annotation.py
 
 # 使用 argparse 包
 # argparse.ArgumentParser() 和 add_argument() 用于指定输入参数以及提供描述
@@ -23,7 +23,7 @@ parser.add_argument('json_path', default=None, metavar='JSON_PATH', type=str,
 
 
 def run(args):
-    Formatter.camelyon16xml2json(args.xml_path, args.json_path) # 转换函数
+    Formatter.camelyon16xml2json(args.xml_path, args.json_path)
 
 
 def main():

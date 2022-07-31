@@ -1,3 +1,6 @@
+"""
+主要用于对肿瘤区域注释数据的相关处理
+"""
 import json
 import xml.etree.ElementTree as ET
 import copy

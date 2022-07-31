@@ -1,3 +1,8 @@
+"""
+用于对训练集和验证集的图片进行处理生成dataset
+包含了数据增强部分包括：色彩增强，随机旋转和翻转
+虽然有 crop_size 参数但似乎并没有用到
+"""
 import os
 import sys
 
@@ -23,6 +28,9 @@ class ImageDataset(Dataset):
         self._pre_process()
 
     def _pre_process(self):
+        """
+        获取给定路径下的图片
+        """
         # find classes
         if sys.version_info >= (3, 5):
             # Faster and available in python 3.5 and above
@@ -59,21 +67,23 @@ class ImageDataset(Dataset):
 
         img = Image.open(path)
 
-        # color jitter
+        # 色彩增强
         img = self._color_jitter(img)
 
-        # use left_right flip
+        # 随机左右翻转
         if np.random.rand() > 0.5:
             img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
-        # use rotate
+        # 随机旋转
         num_rotate = np.random.randint(0, 4)
         img = img.rotate(90 * num_rotate)
 
+        # PIL image to torch image
         # PIL image: H W C
         # torch image: C H W
         img = np.array(img, dtype=np.float32).transpose((2, 0, 1))
 
+        # 归一化 [-1,1]
         if self._normalize:
             img = (img - 128.0) / 128.0
 

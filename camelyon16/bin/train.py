@@ -20,7 +20,7 @@ from tensorboardX import SummaryWriter
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../')
 
-from camelyon16.data.image_producer import ImageDataset
+from camelyon16.data.image_producer import ImageDataset # 见 ../data/image_producer.py
 
 # 设置随机数种子，便于复现结果
 torch.manual_seed(0)
@@ -182,6 +182,8 @@ def run(args):
     optimizer = SGD(model.parameters(), lr=cnn['lr'], momentum=cnn['momentum']) # 优化器：随机梯度下降
 
     # 加载数据
+    # Dataset是一个包装类，用来将数据包装为Dataset类，然后传入DataLoader中，我们再使用DataLoader这个类来更加快捷的对数据进行操作。
+    # 见 ../data/image_producer.py
     # dataset_train = ImageFolder(cnn['data_path_train'])
     # dataset_valid = ImageFolder(cnn['data_path_valid'])
     dataset_train = ImageDataset(cnn['data_path_train'],
