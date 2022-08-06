@@ -9,7 +9,7 @@ import logging
 
 import numpy as np
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "\\..\\..\\")
 
 parser = argparse.ArgumentParser(description="Get the normal region"
                                              " from tumor WSI ")
@@ -28,6 +28,7 @@ def run(args):
     normal_mask = tissue_mask & (~ tumor_mask)
 
     np.save(args.normal_path, normal_mask)
+
 
 def main():
     logging.basicConfig(level=logging.INFO)

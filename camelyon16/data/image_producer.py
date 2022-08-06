@@ -31,16 +31,17 @@ class ImageDataset(Dataset):
         """
         获取给定路径下的图片
         """
-        # find classes
+        # 获取给定目录下的目录作为分类 classes
         if sys.version_info >= (3, 5):
             # Faster and available in python 3.5 and above
             classes = [d.name for d in os.scandir(self._data_path) if d.is_dir()]
         else:
             classes = [d for d in os.listdir(self._data_path) if os.path.isdir(os.path.join(self._data_path, d))]
+        # 将目录分类 classes 转化为 index
         classes.sort()
         class_to_idx = {classes[i]: i for i in range(len(classes))}
 
-        # make dataset
+        # 根据目录分类 classes 确定数据标签，获取目录下所有 png 图片来生成 dataset
         self._items = []
         for target in sorted(class_to_idx.keys()):
             d = os.path.join(self._data_path, target)

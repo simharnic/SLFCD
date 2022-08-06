@@ -2,12 +2,14 @@
 用来将 json 格式转换为 Camelyon16 组织官方提供的 xml 格式
 """
 import json
-import os, sys, argparse
+import os
+import sys
+import argparse
 import logging
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '\\..\\..\\')
 
-from camelyon16.data.annotation import Formatter # 见 ../data/annotation.py
+from camelyon16.data.annotation import Formatter  # 见 ../data/annotation.py
 
 parser = argparse.ArgumentParser(description='Convert My json format to'
                                              'ASAP json format')
@@ -26,11 +28,13 @@ def run(args):
     gen = Formatter()
     gen.json2camelyon16xml(dict, args.xml_path, group_color)
 
+
 def main():
     logging.basicConfig(level=logging.INFO)
 
     args = parser.parse_args()
     run(args)
+
 
 if __name__ == "__main__":
     main()

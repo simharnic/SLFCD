@@ -9,8 +9,9 @@ import argparse
 
 import numpy as np
 
-sys.path.append(os.path.join(os.path.abspath(__file__), "/../../"))
+sys.path.append(os.path.join(os.path.abspath(__file__), "\\..\\..\\"))
 
+# 输出的 pid 跟 npy 一致而与 wsi 不一致导致生成 patch 时繁琐
 
 parser = argparse.ArgumentParser(description="Get center points of patches "
                                              "from mask")
@@ -52,7 +53,8 @@ class patch_point_in_mask_gen(object):
 
 def run(args):
     # 选取中心点
-    sampled_points = patch_point_in_mask_gen(args.mask_path, args.patch_number).get_patch_point()
+    sampled_points = patch_point_in_mask_gen(
+        args.mask_path, args.patch_number).get_patch_point()
     # 考虑对应层级的降采样系数，计算得到其在原图中的坐标
     sampled_points = (sampled_points * 2 ** args.level).astype(np.int32)
     # 导出

@@ -13,9 +13,17 @@ from shutil import copyfile
 # multiprocessing 用于进行多进程处理
 from multiprocessing import Pool, Value, Lock
 
-import openslide
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../')
+# 对于 Windows 平台，需要下载 openslide 的二进制版本并将 bin 文件夹路径添加到环境变量 'openslide' 中
+import platform
+if platform.system() == 'Windows':
+    with os.add_dll_directory(os.getenv('openslide')):
+        import openslide
+else:
+    import openslide
+
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '\\..\\..\\')
 
 parser = argparse.ArgumentParser(description='Generate patches from a given '
                                  'list of coordinates')
@@ -50,7 +58,7 @@ def process(opts):
         (args.patch_size, args.patch_size)).convert('RGB')
     # 保存块
     img.save(os.path.join(args.patch_path, str(i) + '.png'))
-    
+
     global lock
     global count
     # lock 用于多进程间的同步

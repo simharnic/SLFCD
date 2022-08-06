@@ -6,7 +6,7 @@ import os
 import argparse
 import logging
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '\\..\\..\\')
 
 from camelyon16.data.annotation import Formatter  # 见 ../data/annotation.py
 

@@ -7,12 +7,19 @@ import os
 import argparse
 import logging
 
+# 对于 Windows 平台，需要下载 openslide 的二进制版本并将 bin 文件夹路径添加到环境变量 'openslide' 中
+import platform
+if platform.system() == 'Windows':
+    with os.add_dll_directory(os.getenv('openslide')):
+        import openslide
+else:
+    import openslide
+
 import numpy as np
-import openslide
 from skimage.color import rgb2hsv
 from skimage.filters import threshold_otsu
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '\\..\\..\\')
 
 parser = argparse.ArgumentParser(description='Get tissue mask of WSI and save'
                                  ' it in npy format')

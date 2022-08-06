@@ -7,12 +7,19 @@ import sys
 import logging
 import argparse
 
-import numpy as np
-import openslide
+# 对于 Windows 平台，需要下载 openslide 的二进制版本并将 bin 文件夹路径添加到环境变量 'openslide' 中
+import platform
+if platform.system() == 'Windows':
+    with os.add_dll_directory(os.getenv('openslide')):
+        import openslide
+else:
+    import openslide
+
 import cv2
+import numpy as np
 import json
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '\\..\\..\\')
 
 parser = argparse.ArgumentParser(description='Get tumor mask of tumor-WSI and '
                                              'save it in npy format')
@@ -53,15 +60,17 @@ def run(args):
         cv2.fillPoly(mask_tumor, [vertices], (255))
     # 将掩膜图像转化为二值
     mask_tumor = mask_tumor[:] > 127
-    mask_tumor = np.transpose(mask_tumor) # 转置
+    mask_tumor = np.transpose(mask_tumor)  # 转置
 
     np.save(args.npy_path, mask_tumor)
+
 
 def main():
     logging.basicConfig(level=logging.INFO)
 
     args = parser.parse_args()
     run(args)
+
 
 if __name__ == "__main__":
     main()

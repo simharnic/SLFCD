@@ -3,10 +3,19 @@
 包含了数据增强部分包括：随机旋转和翻转
 虽然有 crop_size 参数但似乎并没有用到
 """
+import os
 import numpy as np
 from torch.utils.data import Dataset
-import openslide
 import PIL
+
+# 对于 Windows 平台，需要下载 openslide 的二进制版本并将 bin 文件夹路径添加到环境变量 'openslide' 中
+import platform
+if platform.system() == 'Windows':
+    with os.add_dll_directory(os.getenv('openslide')):
+        import openslide
+else:
+    import openslide
+
 
 class WSIPatchDataset(Dataset):
 
